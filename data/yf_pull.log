@@ -1,0 +1,15 @@
+[25/800] usable=21 {'requested': 800, 'cached': 0, 'fetched': 21, 'no_data': 4, 'errors': 0}
+[50/800] usable=39 {'requested': 800, 'cached': 0, 'fetched': 39, 'no_data': 11, 'errors': 0}
+[75/800] usable=61 {'requested': 800, 'cached': 0, 'fetched': 61, 'no_data': 14, 'errors': 0}
+[100/800] usable=82 {'requested': 800, 'cached': 0, 'fetched': 82, 'no_data': 18, 'errors': 0}
+[125/800] usable=105 {'requested': 800, 'cached': 0, 'fetched': 105, 'no_data': 20, 'errors': 0}
+[150/800] usable=125 {'requested': 800, 'cached': 0, 'fetched': 125, 'no_data': 25, 'errors': 0}
+[175/800] usable=149 {'requested': 800, 'cached': 0, 'fetched': 149, 'no_data': 26, 'errors': 0}
+[200/800] usable=172 {'requested': 800, 'cached': 0, 'fetched': 172, 'no_data': 28, 'errors': 0}
+[225/800] usable=194 {'requested': 800, 'cached': 0, 'fetched': 194, 'no_data': 31, 'errors': 0}
+[250/800] usable=216 {'requested': 800, 'cached': 0, 'fetched': 216, 'no_data': 34, 'errors': 0}
+[275/800] usable=238 {'requested': 800, 'cached': 0, 'fetched': 238, 'no_data': 37, 'errors': 0}
+[300/800] usable=260 {'requested': 800, 'cached': 0, 'fetched': 260, 'no_data': 40, 'errors': 0}
+[325/800] usable=284 {'requested': 800, 'cached': 0, 'fetched': 284, 'no_data': 41, 'errors': 0}
+{'requested': 800, 'cached': 0, 'fetched': 300, 'no_data': 42, 'errors': 0, 'usable_tickers': 300}
+rows=1416 tickers=300 -> /Users/riddhi/Downloads/All Of My Claude Skills/FinanceDSProject/data/yf_raw_panel.parquet

@@ -88,7 +88,8 @@ def add_scaled_variables(panel: pd.DataFrame) -> pd.DataFrame:
 
 def apply_filters(panel: pd.DataFrame, *, drop_utilities: bool = True,
                   size_floor: float = DEFAULT_SIZE_FLOOR,
-                  require_net_income: bool = True) -> tuple[pd.DataFrame, pd.DataFrame]:
+                  require_net_income: bool = True,
+                  fiscal_years: tuple[int, int] | None = None) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Apply the spec section 3 filters in a fixed order, counting every exclusion.
 
     The order is fixed *before* looking at any result. Returns the clean panel and the
@@ -100,46 +101,55 @@ def apply_filters(panel: pd.DataFrame, *, drop_utilities: bool = True,
     df = panel.copy()
     log.record(df, df, "0. raw firm-years", "All 10-K firm-years assembled from the source.")
 
+    if fiscal_years is not None:
+        lo, hi = fiscal_years
+        before = df
+        df = df[df["fiscal_year"].between(lo, hi)]
+        log.record(before, df, f"1. restrict to fiscal years {lo}-{hi}",
+                   "Only these fiscal years are fully covered by the downloaded filing "
+                   "quarters. Stragglers outside the range are delinquent filers whose "
+                   "years are represented by a handful of firms, not a usable cross-section.")
+
     before = df
     df = df[df["sic"].notna()]
-    log.record(before, df, "1. drop missing SIC",
+    log.record(before, df, "2. drop missing SIC",
                "Industry filters below cannot be applied without an industry code.")
 
     before = df
     df = df[~df["sic"].between(6000, 6999)]
-    log.record(before, df, "2. drop financial firms (SIC 6000-6999)",
+    log.record(before, df, "3. drop financial firms (SIC 6000-6999)",
                "Bank and insurer balance sheets are structurally different; total assets "
                "does not mean the same thing, so scaling by it is not comparable.")
 
     if drop_utilities:
         before = df
         df = df[~df["sic"].between(4900, 4949)]
-        log.record(before, df, "3. drop utilities (SIC 4900-4949)",
+        log.record(before, df, "4. drop utilities (SIC 4900-4949)",
                    "Rate-regulated returns make utility earnings mechanically smooth near "
                    "a target; conventional in this literature. Optional filter, applied here.")
 
     if require_net_income:
         before = df
         df = df[df["net_income"].notna()]
-        log.record(before, df, "4. drop missing net income",
+        log.record(before, df, "5. drop missing net income",
                    "No numerator, no observation.")
 
     before = df
     df = df[df["assets_lag"].notna() & (df["assets_lag"] > 0)]
-    log.record(before, df, "5. drop missing or non-positive lagged total assets",
+    log.record(before, df, "6. drop missing or non-positive lagged total assets",
                "Denominator must exist and be positive; a non-positive denominator flips "
                "the sign of the scaled measure. Beginning-of-year assets, never end-of-year.")
 
     before = df
     df = df[df["assets_lag"] >= size_floor]
-    log.record(before, df, f"6. size floor: lagged assets >= ${size_floor:,.0f}",
+    log.record(before, df, f"7. size floor: lagged assets >= ${size_floor:,.0f}",
                "Tiny denominators produce extreme scaled values and are the known source of "
                "the scaling artifact in Durtschi-Easton. Sensitivity to this floor is "
                "reported in robustness check 6.3.")
 
     before = df
     df = df.sort_values("period_end").drop_duplicates(subset=["firm_id", "fiscal_year"], keep="last")
-    log.record(before, df, "7. one filing per firm-fiscal-year",
+    log.record(before, df, "8. one filing per firm-fiscal-year",
                "Amended and transition-period filings can duplicate a firm-year; the most "
                "recent period end is kept.")
 
