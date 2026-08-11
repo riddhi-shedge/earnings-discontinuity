@@ -22,8 +22,10 @@ from pathlib import Path
 import pandas as pd
 import requests
 
-# SEC asks for a descriptive User-Agent with contact info on all automated requests.
-SEC_UA = "earnings-discontinuity-study riddh1.shedg6@gmail.com"
+# SEC asks for a descriptive User-Agent with contact info on all automated requests;
+# the address comes from SEC_CONTACT_EMAIL rather than being hardcoded here.
+from .sec_loader import user_agent
+
 SEC_TICKER_URL = "https://www.sec.gov/files/company_tickers.json"
 
 RAW_DIR = Path(__file__).resolve().parents[1] / "data" / "raw" / "yfinance"
@@ -39,7 +41,7 @@ SHARE_KEYS = ["Diluted Average Shares", "Basic Average Shares"]
 
 def sec_ticker_universe(timeout: int = 30) -> pd.DataFrame:
     """All exchange-listed tickers known to SEC EDGAR (cik, ticker, title)."""
-    resp = requests.get(SEC_TICKER_URL, headers={"User-Agent": SEC_UA}, timeout=timeout)
+    resp = requests.get(SEC_TICKER_URL, headers={"User-Agent": user_agent()}, timeout=timeout)
     resp.raise_for_status()
     rows = list(json.loads(resp.text).values())
     return pd.DataFrame(rows).rename(columns={"cik_str": "cik", "title": "name"})

@@ -337,6 +337,10 @@ selectable and the plots stay sharp at any zoom.
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
+# SEC's fair-access policy requires a real contact address on automated requests.
+# Set this before any download or SEC will rate-limit you.
+export SEC_CONTACT_EMAIL="you@example.com"
+
 # one-time: download and reduce 37 SEC quarterly archives (~2 GB, ~15 min)
 python src/sec_loader.py --start 2017q1 --end 2026q1
 
@@ -359,6 +363,15 @@ python -m src.export_docs    # writeup/writeup.pdf and slides/slides.pdf
 
 Raw SEC archives are never committed. Seeds are fixed (`42` for the ticker draw,
 `20250811` in the notebooks). Package versions are pinned in `requirements.txt`.
+
+Only the download steps touch the network. `pytest` and all three notebooks run
+entirely off the committed parquet cache, so `SEC_CONTACT_EMAIL` is not needed to
+reproduce any result in this README — only to rebuild the panel from scratch.
+
+## Licence
+
+Code is MIT licensed (see `LICENSE`). The underlying data is public: SEC Financial
+Statement Data Sets are US Government works in the public domain.
 
 ## References
 

@@ -27,6 +27,8 @@ is the one the filer itself presents as the comparative.
 
 from __future__ import annotations
 
+import os
+import warnings
 import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -39,8 +41,27 @@ RAW_DIR = ROOT / "data" / "raw_sec"
 CACHE_DIR = ROOT / "data" / "cache"
 
 BASE_URL = "https://www.sec.gov/files/dera/data/financial-statement-data-sets"
-# SEC requires a descriptive User-Agent with contact info on automated requests.
-USER_AGENT = "earnings-discontinuity-study riddh1.shedg6@gmail.com"
+
+PLACEHOLDER_EMAIL = "your-email@example.com"
+
+
+def user_agent() -> str:
+    """The User-Agent sent to SEC servers.
+
+    SEC's fair-access policy requires automated requests to identify themselves with a
+    descriptive name and a working contact address; requests without one get rate
+    limited or blocked. Set ``SEC_CONTACT_EMAIL`` before running any download, so the
+    address stays out of the source tree.
+    """
+    email = os.environ.get("SEC_CONTACT_EMAIL", "").strip()
+    if not email:
+        warnings.warn(
+            "SEC_CONTACT_EMAIL is not set, so requests to sec.gov will carry a "
+            f"placeholder contact ({PLACEHOLDER_EMAIL}). SEC may rate-limit or block "
+            "these. Export SEC_CONTACT_EMAIL=you@example.com before downloading.",
+            RuntimeWarning, stacklevel=2)
+        email = PLACEHOLDER_EMAIL
+    return f"earnings-discontinuity-study {email}"
 
 NUM_COLS = ["adsh", "tag", "version", "ddate", "qtrs", "uom", "segments", "coreg", "value", "footnote"]
 
@@ -120,7 +141,7 @@ def download_quarter(quarter: str, raw_dir: Path = RAW_DIR, timeout: int = 180) 
     dest = raw_dir / f"{quarter}.zip"
     if dest.exists() and dest.stat().st_size > 1_000_000:
         return dest
-    resp = requests.get(f"{BASE_URL}/{quarter}.zip", headers={"User-Agent": USER_AGENT},
+    resp = requests.get(f"{BASE_URL}/{quarter}.zip", headers={"User-Agent": user_agent()},
                         timeout=timeout, stream=True)
     resp.raise_for_status()
     tmp = dest.with_suffix(".zip.part")
