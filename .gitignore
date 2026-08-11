@@ -1,0 +1,21 @@
+# virtualenv
+.venv/
+venv/
+
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+
+# raw bulk downloads -- never commit these (SEC quarterly zips are ~85 MB each)
+data/raw/
+data/raw_sec/
+*.zip
+
+# large intermediate caches
+data/cache/
+data/*.csv
+
+# OS
+.DS_Store
