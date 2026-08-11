@@ -13,9 +13,11 @@ data/raw/
 data/raw_sec/
 *.zip
 
-# large intermediate caches
+# large intermediate caches (per-quarter extracts; rebuilt by src/sec_loader.py)
 data/cache/
-data/*.csv
+
+# result tables under data/ ARE committed -- drop_log.csv, main_test_results.csv,
+# robustness_results.csv and sec_quarter_log.csv are deliverables, not caches.
 
 # OS
 .DS_Store

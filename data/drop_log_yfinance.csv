@@ -1,0 +1,9 @@
+step,rationale,rows_before,rows_dropped,rows_after,firms_after
+0. raw firm-years,All 10-K firm-years assembled from the source.,1416,0,1416,300
+2. drop missing SIC,Industry filters below cannot be applied without an industry code.,1416,362,1054,222
+3. drop financial firms (SIC 6000-6999),"Bank and insurer balance sheets are structurally different; total assets does not mean the same thing, so scaling by it is not comparable.",1054,255,799,167
+4. drop utilities (SIC 4900-4949),"Rate-regulated returns make utility earnings mechanically smooth near a target; conventional in this literature. Optional filter, applied here.",799,40,759,158
+5. drop missing net income,"No numerator, no observation.",759,139,620,158
+6. drop missing or non-positive lagged total assets,"Denominator must exist and be positive; a non-positive denominator flips the sign of the scaled measure. Beginning-of-year assets, never end-of-year.",620,163,457,156
+"7. size floor: lagged assets >= $10,000,000",Tiny denominators produce extreme scaled values and are the known source of the scaling artifact in Durtschi-Easton. Sensitivity to this floor is reported in robustness check 6.3.,457,56,401,140
+8. one filing per firm-fiscal-year,Amended and transition-period filings can duplicate a firm-year; the most recent period end is kept.,401,0,401,140

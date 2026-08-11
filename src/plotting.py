@@ -60,7 +60,7 @@ def use_house_style() -> None:
 
 
 def _draw_hist(ax, table: pd.DataFrame, width: float, *, show_expected: bool = True,
-               annotate: bool = True) -> None:
+               annotate: bool = True, n_xticks: int | None = None) -> None:
     focal = (table["is_just_below_zero"] | table["is_just_above_zero"]).to_numpy()
     colors = np.where(focal, SERIES_2, SERIES_1)
 
@@ -71,6 +71,9 @@ def _draw_hist(ax, table: pd.DataFrame, width: float, *, show_expected: bool = T
     ax.set_axisbelow(True)
     ax.grid(axis="y", zorder=0)
     ax.set_xlim(table["left"].min(), table["right"].max())
+    if n_xticks:
+        # Small multiples get sparse ticks; the default locator collides at panel width.
+        ax.set_xticks(np.linspace(table["left"].min(), table["right"].max(), n_xticks))
 
     if show_expected:
         for _, row in table[focal].iterrows():
@@ -160,7 +163,7 @@ def bin_width_panel(values, widths, *, source: str, out: Path | None = None,
     fig, axes = plt.subplots(1, len(widths), figsize=(4.6 * len(widths), 4.4), sharey=False)
     for ax, width in zip(np.atleast_1d(axes), widths):
         table = discontinuity_table(values, width)
-        _draw_hist(ax, table, width, annotate=False)
+        _draw_hist(ax, table, width, annotate=False, n_xticks=5)
         below = table[table["is_just_below_zero"]].iloc[0]
         above = table[table["is_just_above_zero"]].iloc[0]
         ax.set_title(f"bin width {width:g}\nz below = {below['z']:+.2f}   "
@@ -188,7 +191,7 @@ def placebo_panel(ni_values, cfo_values, width: float, *, source: str, out: Path
     ]
     for ax, (vals, xlabel, title) in zip(axes, specs):
         table = discontinuity_table(vals, width)
-        _draw_hist(ax, table, width, annotate=False)
+        _draw_hist(ax, table, width, annotate=False, n_xticks=5)
         below = table[table["is_just_below_zero"]].iloc[0]
         above = table[table["is_just_above_zero"]].iloc[0]
         ax.set_title(f"{title}\nN = {int(table['count'].sum()):,}   "

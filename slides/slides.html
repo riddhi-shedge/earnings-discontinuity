@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Do companies bend earnings to avoid reporting a loss?</title>
+<style>
+  /* Self-contained: no CDN, no external fonts, no network. Arrow keys or scroll. */
+  :root {
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --ink-3: #84837c;
+    --rule: #e3e2dd;
+    --accent: #2a78d6;
+    --accent-2: #eb6834;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --ink-3: #8f8e85;
+      --rule: #34332f; --accent: #3987e5; --accent-2: #d95926;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--surface); color: var(--ink);
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    scroll-snap-type: y mandatory; overflow-y: scroll; height: 100vh;
+  }
+  section {
+    scroll-snap-align: start; min-height: 100vh; padding: 4.5vh 6vw 7vh;
+    display: flex; flex-direction: column; justify-content: center;
+    border-bottom: 1px solid var(--rule);
+  }
+  h1 { font-size: clamp(28px, 4.2vw, 52px); line-height: 1.12; margin: 0 0 .5em; letter-spacing: -.02em; }
+  h2 { font-size: clamp(21px, 2.6vw, 33px); line-height: 1.2; margin: 0 0 .7em; letter-spacing: -.015em; }
+  .kicker { color: var(--accent); font-size: 13px; font-weight: 700; letter-spacing: .09em;
+            text-transform: uppercase; margin-bottom: 1.1em; }
+  p, li { color: var(--ink-2); font-size: clamp(14px, 1.35vw, 19px); max-width: 62ch; }
+  ul { padding-left: 1.15em; margin: .4em 0; }
+  li { margin: .45em 0; }
+  strong { color: var(--ink); }
+  .lede { font-size: clamp(16px, 1.7vw, 23px); max-width: 56ch; }
+  figure { margin: 0; }
+  img { max-width: 100%; max-height: 66vh; height: auto; display: block; margin: 0 auto;
+        border: 1px solid var(--rule); border-radius: 6px; background: #fcfcfb; }
+  figcaption { color: var(--ink-3); font-size: 12.5px; margin-top: .8em; text-align: center; }
+  table { border-collapse: collapse; margin: .6em 0; font-variant-numeric: tabular-nums; }
+  th, td { padding: .34em .95em .34em 0; text-align: left; font-size: clamp(13px, 1.25vw, 17px); }
+  th { color: var(--ink-3); font-weight: 600; border-bottom: 1px solid var(--rule); }
+  td { color: var(--ink-2); }
+  td.num, th.num { text-align: right; padding-right: 1.6em; }
+  .hit { color: var(--accent-2); font-weight: 700; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1.6em; margin-top: 1em; }
+  .stat { font-size: clamp(26px, 3.4vw, 42px); font-weight: 700; color: var(--ink); letter-spacing: -.02em; line-height: 1.05; }
+  .stat-label { font-size: 13px; color: var(--ink-3); margin-top: .35em; }
+  .foot { position: fixed; right: 1.4vw; bottom: 1.1vh; font-size: 11.5px; color: var(--ink-3);
+          background: var(--surface); padding: .25em .5em; border-radius: 4px; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .92em;
+         background: var(--rule); padding: .1em .35em; border-radius: 3px; color: var(--ink); }
+  @media (max-width: 700px) { section { justify-content: flex-start; padding-top: 7vh; } }
+</style>
+</head>
+<body>
+
+<section>
+  <div class="kicker">Distributional test · SEC filing data</div>
+  <h1>Do companies bend earnings<br>to avoid reporting a loss?</h1>
+  <p class="lede">If earnings were unmanaged, the cross-firm distribution of net income
+  should be smooth. There is no economic reason for a break at exactly zero. A manager
+  near a small loss has discretion — so does the distribution show a <strong>notch</strong>?</p>
+  <div class="grid">
+    <div><div class="stat">16,018</div><div class="stat-label">firm-years tested</div></div>
+    <div><div class="stat">3,582</div><div class="stat-label">distinct firms</div></div>
+    <div><div class="stat">2016–25</div><div class="stat-label">fiscal years</div></div>
+    <div><div class="stat">SEC</div><div class="stat-label">Financial Statement Data Sets</div></div>
+  </div>
+</section>
+
+<section>
+  <div class="kicker">Data</div>
+  <h2>37 quarterly SEC archives, 10-K filings only</h2>
+  <p>XBRL-derived flat files, no authentication. Schema verified against the live
+  2026q1 archive before writing the loader. 113.2 million fact rows scanned.</p>
+  <p><strong>Why 10-Ks only:</strong> a 10-K carries the comparative balance sheet, so
+  one filing supplies both current-year and prior-year total assets — the lagged
+  denominator, from the filer's own comparative column.</p>
+  <table>
+    <tr><th>Filter</th><th class="num">dropped</th><th class="num">remaining</th></tr>
+    <tr><td>raw 10-K firm-years</td><td class="num">—</td><td class="num">57,407</td></tr>
+    <tr><td>fiscal years 2016–25 + missing SIC</td><td class="num">691</td><td class="num">56,716</td></tr>
+    <tr><td>financial firms (SIC 6000–6999)</td><td class="num">14,590</td><td class="num">42,126</td></tr>
+    <tr><td>utilities (SIC 4900–4949)</td><td class="num">1,404</td><td class="num">40,722</td></tr>
+    <tr><td>missing net income / bad lagged assets</td><td class="num">1,467</td><td class="num">39,255</td></tr>
+    <tr><td>size floor: lagged assets ≥ $10m</td><td class="num">8,011</td><td class="num">31,244</td></tr>
+    <tr><td>one filing per firm-year</td><td class="num">4</td><td class="num">31,240</td></tr>
+    <tr><td>window |ROA| ≤ 0.10</td><td class="num">15,222</td><td class="num"><strong>16,018</strong></td></tr>
+  </table>
+  <p style="font-size:14px">Filters fixed before results were inspected. Every exclusion counted in the README.</p>
+</section>
+
+<section>
+  <div class="kicker">Method</div>
+  <h2>Predict each bin from its neighbours</h2>
+  <p><code>expected_i = (count_{i−1} + count_{i+1}) / 2</code>, standardized with the
+  binomial variance. <code>ROA = NetIncome_t / TotalAssets_{t−1}</code> — beginning-of-year
+  assets, always.</p>
+  <p>Three commitments, made before looking at any output and enforced in code:</p>
+  <ul>
+    <li><strong>Zero on a bin boundary</strong>, never inside a bin — every edge is an
+    integer multiple of the bin width, unit-tested.</li>
+    <li><strong>All three bin widths reported</strong> (0.0025, 0.005, 0.01). A result
+    at one width is not a result.</li>
+    <li><strong>Both sides reported</strong> — deficit below zero <em>and</em> surplus
+    above. Finding only one is weaker evidence.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="kicker">The headline</div>
+  <figure>
+    <img src="../figures/headline_histogram.png" alt="Histogram of net income scaled by beginning-of-year total assets, with zero on a bin boundary. The bin just below zero holds 459 firm-years against 480 predicted by its neighbours; the bin just above holds 550 against 496 predicted.">
+    <figcaption>N = 16,018 firm-years, bin width 0.005, zero on a bin boundary.
+    Below zero: 459 vs 480 predicted (z = −0.79). Above zero: 550 vs 496 (z = +1.95).</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="kicker">Robustness 1 — bin width</div>
+  <h2>The direction holds. The significance does not.</h2>
+  <table>
+    <tr><th>bin width</th><th class="num">z below zero</th><th class="num">p</th><th class="num">z above zero</th><th class="num">p</th></tr>
+    <tr><td>0.0025</td><td class="num">−0.31</td><td class="num">0.75</td><td class="num">+1.91</td><td class="num">0.057</td></tr>
+    <tr><td>0.005</td><td class="num">−0.79</td><td class="num">0.43</td><td class="num">+1.95</td><td class="num">0.051</td></tr>
+    <tr><td>0.01</td><td class="num">−0.87</td><td class="num">0.38</td><td class="num">+1.73</td><td class="num">0.083</td></tr>
+  </table>
+  <p>Fewer small losses and more small profits than neighbours predict, at every width
+  — the predicted sign. But the deficit below zero is never significant, and the
+  surplus above sits right at the 0.05 boundary.</p>
+  <p>Size terciles show no concentration in small firms (z = −0.25 / −0.26 / −0.91), and
+  the result is flat across size floors from $0 to $500m.</p>
+</section>
+
+<section>
+  <div class="kicker">Robustness 2 — the scalar</div>
+  <h2>Same firms, three denominators, three answers</h2>
+  <table>
+    <tr><th>denominator</th><th class="num">N</th><th class="num">z below</th><th class="num">p</th><th class="num">z above</th><th class="num">p</th></tr>
+    <tr><td>lagged total assets</td><td class="num">16,018</td><td class="num">−0.79</td><td class="num">0.43</td><td class="num">+1.95</td><td class="num">0.051</td></tr>
+    <tr><td class="hit">revenue</td><td class="num">13,452</td><td class="num hit">−2.97</td><td class="num hit">0.003</td><td class="num hit">+4.62</td><td class="num hit">&lt;0.001</td></tr>
+    <tr><td>lagged book equity</td><td class="num">7,177</td><td class="num">−1.20</td><td class="num">0.23</td><td class="num">+1.61</td><td class="num">0.11</td></tr>
+  </table>
+  <p>Revenue scaling produces a clean, significant notch at <em>all three</em> bin
+  widths. Assets and book equity produce nothing. <strong>The result is a property of
+  the scaling choice as much as of the earnings</strong> — which is exactly what
+  Durtschi &amp; Easton (2005) argued, arriving here empirically.</p>
+</section>
+
+<section>
+  <div class="kicker">Robustness 3 — the placebo</div>
+  <figure>
+    <img src="../figures/cfo_placebo.png" alt="Two histograms side by side: net income and cash flow from operations, both scaled by the same lagged total assets. Net income shows a small surplus just above zero; cash flow shows a larger surplus just below zero and a deficit just above.">
+    <figcaption>Cash flow from operations is much harder to push across zero through
+    accrual timing — so it should show no notch. Instead it shows a
+    <strong>larger break in the opposite direction</strong>: z = +3.55 below zero,
+    −3.59 above (bin width 0.01, p &lt; 0.001).</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="kicker">Bottom line</div>
+  <h2>No clear discontinuity — and a useful reason why</h2>
+  <ul>
+    <li><strong>I did not find significant evidence</strong> of a deficit of small
+    losses in recent SEC filing data. The direction matches the classical result at
+    every bin width; the magnitude does not reach significance.</li>
+    <li><strong>The one significant version is denominator-specific.</strong> Revenue
+    scaling gives a clean notch; assets and book equity do not.</li>
+    <li><strong>The placebo undercuts the null itself.</strong> Neighbour-averaging
+    finds a significant "discontinuity" in cash flow, which cannot have been managed
+    into shape — and it grows with bin width, the signature of density curvature, not
+    a knife-edge break.</li>
+    <li>Where a notch appears, <strong>"consistent with earnings management"</strong>
+    is as far as the evidence reaches. This is a distributional anomaly, not a
+    causal finding.</li>
+    <li><strong>Caveats:</strong> pooled firm-years (5.8 per firm) overstate precision;
+    period is 2016–2025 only, so a faded post-SOX notch is compatible with the
+    original result rather than a refutation of it.</li>
+  </ul>
+</section>
+
+<div class="foot">↑ ↓ to navigate</div>
+<script>
+  document.addEventListener("keydown", function (e) {
+    var slides = Array.prototype.slice.call(document.querySelectorAll("section"));
+    if (["ArrowDown", "ArrowRight", "PageDown", " ", "ArrowUp", "ArrowLeft", "PageUp"].indexOf(e.key) === -1) return;
+    e.preventDefault();
+    var back = ["ArrowUp", "ArrowLeft", "PageUp"].indexOf(e.key) !== -1;
+    var here = slides.findIndex(function (s) { return s.getBoundingClientRect().top > window.innerHeight * -0.5; });
+    if (here === -1) here = slides.length - 1;
+    var next = Math.max(0, Math.min(slides.length - 1, back ? here - 1 : here + 1));
+    slides[next].scrollIntoView({ behavior: "smooth" });
+  });
+</script>
+</body>
+</html>
