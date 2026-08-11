@@ -309,12 +309,27 @@ scalar above all — that are usually made in passing.
 data/          panel.parquet (cached clean panel), drop_log.csv, result tables
                raw_sec/ and cache/ are gitignored -- rebuilt by src/sec_loader.py
 notebooks/     01_explore, 02_main_test, 03_robustness -- run top-to-bottom on the cache
-figures/       headline_histogram.png (+ .svg) and all robustness figures
+figures/       headline_histogram.png (+ .svg), all robustness figures
+               all_figures.pdf   -- every figure, one per page
+               pdf/              -- each figure as a standalone vector PDF
 src/           sec_loader, yf_loader, panel, binning, discontinuity, plotting, build_panel
+               export_pdf (figures -> PDF), export_docs (writeup + deck -> PDF)
 tests/         35 unit tests -- lag logic, zero-on-boundary, drop-log accounting, notch detection
-writeup/       2-3 page writeup
-slides/        slides.html -- 8-slide deck
+writeup/       writeup.md, writeup.pdf -- 4-page writeup
+slides/        slides.html, slides.pdf -- 8-slide deck, 16:9
 ```
+
+### PDF deliverables
+
+| File | What it is |
+|---|---|
+| `writeup/writeup.pdf` | 4-page writeup, letter size, suitable for attaching to an application |
+| `slides/slides.pdf` | 8-slide deck, 16:9 (10in × 5.625in), one slide per page |
+| `figures/all_figures.pdf` | all 8 figures, one per page, vector |
+| `figures/pdf/*.pdf` | each figure individually, vector |
+
+Figures are re-rendered from the data rather than converted from PNG, so text stays
+selectable and the plots stay sharp at any zoom.
 
 ## 10. Reproducing
 
@@ -336,6 +351,10 @@ pytest tests/ -q
 
 # notebooks -- these read the parquet cache and download nothing
 jupyter nbconvert --to notebook --execute --inplace notebooks/*.ipynb
+
+# PDF deliverables (export_docs needs Chrome/Chromium installed)
+python -m src.export_pdf     # figures -> figures/pdf/*.pdf + figures/all_figures.pdf
+python -m src.export_docs    # writeup/writeup.pdf and slides/slides.pdf
 ```
 
 Raw SEC archives are never committed. Seeds are fixed (`42` for the ticker draw,

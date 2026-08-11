@@ -60,6 +60,32 @@
   code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .92em;
          background: var(--rule); padding: .1em .35em; border-radius: 3px; color: var(--ink); }
   @media (max-width: 700px) { section { justify-content: flex-start; padding-top: 7vh; } }
+
+  /* Print / PDF: one 16:9 page per section, always light, colours preserved. */
+  @page { size: 10in 5.625in; margin: 0; }
+  @media print {
+    :root {
+      --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #84837c;
+      --rule: #e3e2dd; --accent: #2a78d6; --accent-2: #eb6834;
+    }
+    html, body {
+      height: auto; overflow: visible; scroll-snap-type: none;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      background: #fcfcfb; font-size: 15px;
+    }
+    section {
+      width: 10in; height: 5.625in; min-height: 0; padding: .5in .62in;
+      break-after: page; page-break-after: always; border-bottom: 0;
+      overflow: hidden;
+    }
+    section:last-of-type { break-after: auto; page-break-after: auto; }
+    h1 { font-size: 40px; } h2 { font-size: 27px; }
+    p, li { font-size: 15px; } .lede { font-size: 18px; }
+    th, td { font-size: 14px; } .stat { font-size: 34px; }
+    img { max-height: 3.75in; border-color: #e3e2dd; }
+    figcaption { font-size: 11px; }
+    .foot { display: none; }
+  }
 </style>
 </head>
 <body>

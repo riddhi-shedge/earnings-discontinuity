@@ -21,3 +21,6 @@ data/cache/
 
 # OS
 .DS_Store
+
+# generated intermediate for the writeup PDF
+writeup/*.print.html
