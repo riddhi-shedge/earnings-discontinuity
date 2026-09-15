@@ -13,3 +13,7 @@ pytest==9.1.1
 
 # PDF export (src/export_docs.py); rendering also needs Chrome/Chromium
 markdown==3.10.3
+
+# dashboards and presentation
+openpyxl==3.1.5
+python-pptx==1.0.2

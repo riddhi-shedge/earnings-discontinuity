@@ -309,27 +309,38 @@ scalar above all — that are usually made in passing.
 data/          panel.parquet (cached clean panel), drop_log.csv, result tables
                raw_sec/ and cache/ are gitignored -- rebuilt by src/sec_loader.py
 notebooks/     01_explore, 02_main_test, 03_robustness -- run top-to-bottom on the cache
-figures/       headline_histogram.png (+ .svg), all robustness figures
+figures/       headline_histogram.png (+ .svg), all robustness figures, explainer graphics
                all_figures.pdf   -- every figure, one per page
                pdf/              -- each figure as a standalone vector PDF
-src/           sec_loader, yf_loader, panel, binning, discontinuity, plotting, build_panel
-               export_pdf (figures -> PDF), export_docs (writeup + deck -> PDF)
-tests/         35 unit tests -- lag logic, zero-on-boundary, drop-log accounting, notch detection
+dashboard/     earnings_discontinuity_dashboard.xlsx  -- Excel live model (see below)
+               earnings_discontinuity_dashboard.csv   -- Google Sheets edition (formulas as text)
+slides/        earnings_discontinuity.pptx  -- 19-slide presentation with speaker notes
+               speaker_notes.md             -- the same script, readable on its own
+               slides.html, slides.pdf      -- the short 8-slide summary deck
 writeup/       writeup.md, writeup.pdf -- 4-page writeup
-slides/        slides.html, slides.pdf -- 8-slide deck, 16:9
+src/           sec_loader, yf_loader, panel, binning, discontinuity, plotting, build_panel
+               export_pdf, export_docs, export_dashboard, export_sheets_csv,
+               export_explainers, deck_content + export_deck
+tests/         35 unit tests -- lag logic, zero-on-boundary, drop-log accounting, notch detection
 ```
 
-### PDF deliverables
+### Deliverables
 
 | File | What it is |
 |---|---|
 | `writeup/writeup.pdf` | 4-page writeup, letter size, suitable for attaching to an application |
-| `slides/slides.pdf` | 8-slide deck, 16:9 (10in × 5.625in), one slide per page |
-| `figures/all_figures.pdf` | all 8 figures, one per page, vector |
+| `slides/earnings_discontinuity.pptx` | 19-slide presentation (15 main + 4 backup), 16:9, with a full spoken script in every slide's notes pane. Drag into Google Drive to open as Google Slides; notes carry over. |
+| `slides/speaker_notes.md` | The same script as a standalone document |
+| `slides/slides.pdf` | Short 8-slide summary deck, one slide per page |
+| `figures/all_figures.pdf` | all figures, one per page, vector |
 | `figures/pdf/*.pdf` | each figure individually, vector |
+| `dashboard/earnings_discontinuity_dashboard.xlsx` | Excel workbook: the full 31,240-row panel with ROA / NI-to-revenue / NI-to-equity / CFO-to-assets as formulas, and every histogram, neighbour expectation, z and p-value as `COUNTIFS` and arithmetic over that sheet. Change a number in `Panel` and the charts move. |
+| `dashboard/earnings_discontinuity_dashboard.csv` | Google Sheets edition. Bin counts are values from the pipeline; expected counts, z and p are live formulas; `SPARKLINE` cells draw each distribution. Upload to Drive and it opens as a native Sheet with the formulas evaluated. |
 
 Figures are re-rendered from the data rather than converted from PNG, so text stays
-selectable and the plots stay sharp at any zoom.
+selectable and the plots stay sharp at any zoom. Every number in the dashboard
+workbooks was checked against the Python results by evaluating the formulas in a
+spreadsheet engine — 36 headline values, all matching.
 
 ## 10. Reproducing
 
@@ -359,6 +370,13 @@ jupyter nbconvert --to notebook --execute --inplace notebooks/*.ipynb
 # PDF deliverables (export_docs needs Chrome/Chromium installed)
 python -m src.export_pdf     # figures -> figures/pdf/*.pdf + figures/all_figures.pdf
 python -m src.export_docs    # writeup/writeup.pdf and slides/slides.pdf
+
+# dashboards and presentation
+python -m src.export_dashboard            # Excel live model
+python -m src.export_dashboard --sheets   # compact xlsx for Sheets (counts as values)
+python -m src.export_sheets_csv           # Google Sheets edition as CSV with formulas
+python -m src.export_explainers           # teaching graphics used in the deck
+python -m src.export_deck                 # PowerPoint + speaker_notes.md
 ```
 
 Raw SEC archives are never committed. Seeds are fixed (`42` for the ticker draw,
