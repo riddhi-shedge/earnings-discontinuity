@@ -423,7 +423,7 @@ SLIDES: list[dict] = [
         "kicker": "APPENDIX D — REPRODUCIBILITY",
         "title": "Everything here can be re-run from the repository.",
         "bullets": [
-            ("Code and data", "github.com/astronomy-lover/earnings-discontinuity — Python 3.13, pandas, numpy, scipy, matplotlib. "
+            ("Code and data", "github.com/riddhi-shedge/earnings-discontinuity — Python 3.13, pandas, numpy, scipy, matplotlib. "
                               "The cleaned panel is committed as parquet, so the notebooks run without touching SEC servers."),
             ("Notebooks", "01_explore (sample + sanity checks), 02_main_test (the test at three widths), 03_robustness (all four checks)."),
             ("Tests", "35 unit tests: lagged-denominator logic, zero-on-a-bin-edge, exclusion-log accounting, and detection of an injected notch."),
