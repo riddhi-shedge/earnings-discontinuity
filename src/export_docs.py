@@ -73,63 +73,55 @@ a { color: #1f5fa8; text-decoration: none; word-break: break-word; }
 
 
 GUIDE_CSS = DOC_CSS + """
-/* ---- long-form guide: textbook structure ---------------------------------- */
-@page { size: letter; margin: 0.85in 0.9in; }
-body { font-size: 10pt; line-height: 1.52; }
+/* ---- reference guide: dense, no page breaks, strong visual hierarchy ------- */
+@page { size: letter; margin: 0.72in 0.78in; }
+body { font-size: 9.4pt; line-height: 1.44; }
 
-/* document title + subtitle */
-h1 { font-size: 24pt; margin: 0 0 .12em; }
-h1 + h3, h3:first-of-type { font-size: 12.5pt; font-style: italic; color: #52514e;
-                            margin: 0 0 2em; font-weight: 400; }
+h1 { font-size: 20pt; margin: 0 0 .1em; }
+h1 + h3 { font-size: 11.5pt; font-style: italic; color: #52514e; font-weight: 400;
+          margin: 0 0 1.4em; border: 0; padding: 0; }
 
-/* PART dividers: start a page, sit as a banner */
-h1.part { font: 700 15pt/1.3 "Helvetica Neue", Helvetica, Arial, sans-serif;
+/* PART banners: strong rule, no page break -- breaks left pages a fifth full */
+h1.part { font: 700 12.5pt/1.3 "Helvetica Neue", Helvetica, Arial, sans-serif;
           letter-spacing: .10em; color: #2a78d6; text-transform: uppercase;
-          break-before: page; page-break-before: always;
-          border-top: 2.5px solid #2a78d6; border-bottom: 1px solid #e3e2dd;
-          padding: .5em 0 .45em; margin: 0 0 1.6em; }
+          border-top: 2.5px solid #2a78d6; padding: .45em 0 0; margin: 2.1em 0 1.1em;
+          break-after: avoid; page-break-after: avoid; }
 
-/* chapters start a page -- except the one directly under a PART banner */
-h2 { font-size: 14pt; border-bottom: 1px solid #e3e2dd; padding-bottom: .3em;
-     margin: 2.1em 0 .9em; break-after: avoid; page-break-after: avoid; }
-/* chapters do not force a page -- that left too many pages a fifth full. They get
-   generous space above instead, and can never dangle at the foot of a page. */
-h1.part + h2.chapter { margin-top: 0; }
+h2 { font-size: 12pt; border-bottom: 1px solid #e3e2dd; padding-bottom: .25em;
+     margin: 1.7em 0 .7em; break-after: avoid; page-break-after: avoid; }
+h1.part + h2 { margin-top: 0; }
 
-/* numbered sections inside a chapter */
-h2 + p, h3 + p { break-before: avoid; page-break-before: avoid; }
-h3 { font: 700 11pt/1.35 "Helvetica Neue", Helvetica, Arial, sans-serif;
-     color: #14140f; margin: 1.5em 0 .45em; font-style: normal;
+h3 { font: 700 10pt/1.3 "Helvetica Neue", Helvetica, Arial, sans-serif; color: #14140f;
+     margin: 1.4em 0 .4em; font-style: normal;
      break-after: avoid; page-break-after: avoid; }
 
-/* definition boxes (markdown blockquotes) */
-blockquote { margin: .9em 0; padding: .6em .85em .6em .8em;
-             background: #f7f6f2; border-left: 3px solid #2a78d6;
-             font-size: 9.6pt; line-height: 1.45;
+h2 + p, h3 + p, h2 + table, h3 + table { break-before: avoid; page-break-before: avoid; }
+
+/* definitions: compact, a thin accent rule rather than a filled box */
+blockquote { margin: .55em 0; padding: 0 0 0 .7em; border-left: 2.5px solid #2a78d6;
+             background: none; font-size: 9pt; line-height: 1.4;
              break-inside: avoid; page-break-inside: avoid; }
-blockquote p { margin: 0 0 .35em; }
+blockquote p { margin: 0 0 .3em; }
 blockquote p:last-child { margin-bottom: 0; }
-blockquote .term { display: block; margin-bottom: .1em; }
+blockquote .term { font-weight: 700; }
 
-/* the "In one sentence" recap that closes each chapter */
-h3.summary { color: #52514e; font-size: 9.5pt; letter-spacing: .06em;
-             text-transform: uppercase; margin-top: 1.7em; }
-h3.summary + p { background: #fbf6ef; border-left: 3px solid #eb6834;
-                 padding: .6em .85em; margin: 0; font-size: 9.8pt;
-                 break-inside: avoid; page-break-inside: avoid; }
+/* Q&A: the question leads its answer paragraph; lift it onto its own line */
+p .q { display: block; font-weight: 700; color: #14140f; margin-bottom: .12em; }
+p:has(> .q) { margin-top: 1.15em; }
+/* a question must not be the last thing on a page */
+p .q { break-after: avoid; page-break-after: avoid; }
 
-/* Q&A: a question is a paragraph that is entirely a bold quoted string */
-p.q { margin: 1.7em 0 .5em; break-after: avoid; page-break-after: avoid; }
-p.q + p { break-before: avoid; page-break-before: avoid; }
-p, li { orphans: 2; widows: 2; }
-ul, ol { margin: .35em 0 .85em; padding-left: 1.3em; }
-li { margin: 0 0 .38em; }
-table { font-size: 8.9pt; margin: .85em 0 1em; }
-th, td { padding: .3em .45em; }
-/* text columns in tables read better left-aligned than the numeric default */
-td:last-child:not(:nth-child(2)) { text-align: left; }
-pre { margin: .85em 0; }
-hr { margin: 1.5em 0; }
+p, li { orphans: 2; widows: 2; margin: 0 0 .55em; }
+ul, ol { margin: .3em 0 .7em; padding-left: 1.2em; }
+li { margin: 0 0 .3em; }
+table { font-size: 8.4pt; margin: .7em 0 .85em; }
+th, td { padding: .26em .4em; }
+/* let the markdown column markers (|---:|) drive alignment, not a blanket rule:
+   these tables mix prose columns with numeric ones. */
+th, td { text-align: left; }
+pre { margin: .7em 0; padding: .5em .7em; }
+pre code { font-size: 8.4pt; }
+hr { margin: 1.2em 0; }
 """
 
 
@@ -146,7 +138,6 @@ def find_chrome() -> str:
 CODE_SPAN = re.compile(r"```.*?```|`[^`\n]+`", re.S)
 
 
-
 def _tag_structure(html: str) -> str:
     """Tag part banners, chapter openings and recap boxes for the print stylesheet.
 
@@ -155,8 +146,6 @@ def _tag_structure(html: str) -> str:
     "don't break between them" rule can match.
     """
     html = re.sub(r"<h1>(PART\b)", r'<h1 class="part">\1', html)
-    html = re.sub(r"<h2>(Chapter\b)", r'<h2 class="chapter">\1', html)
-    html = re.sub(r"<h3>(In one sentence)</h3>", r'<h3 class="summary">\1</h3>', html)
     # <hr> immediately before or after a part banner
     html = re.sub(r"<hr\s*/?>\s*(<h1 class=\"part\">)", r"\1", html)
     html = re.sub(r"(</h1>)\s*<hr\s*/?>", r"\1", html)
@@ -165,15 +154,12 @@ def _tag_structure(html: str) -> str:
         # DOTALL on the italic gloss: it often wraps across source lines.
         inner = re.sub(r"<p>(<strong>.*?</strong>(?:\s*<em>.*?</em>)?)",
                        r'<p><span class="term">\1</span>', match.group(1), flags=re.S)
-        # "**Term** -- definition" reads as a dangling dash once the term is its own
-        # line, so drop a leading dash from what follows.
-        inner = re.sub(r'(</span>)\s*[\u2014\u2013-]\s*', r"\1", inner)
         return f"<blockquote>{inner}</blockquote>"
 
     html = re.sub(r"<blockquote>(.*?)</blockquote>", term_on_own_line, html, flags=re.S)
-    # question paragraphs in the Q&A chapter
-    return re.sub(r'<p>(<strong>&quot;.*?&quot;</strong>|<strong>".*?"</strong>)</p>',
-                  r'<p class="q">\1</p>', html, flags=re.S)
+    # a Q&A question: a paragraph opening with a bold quoted string
+    return re.sub(r'<p>(<strong>(?:&quot;|").*?(?:&quot;|")</strong>)',
+                  r'<p><span class="q">\1</span>', html, flags=re.S)
 
 
 def markdown_to_html(md_text: str, title: str, css: str = DOC_CSS) -> str:
