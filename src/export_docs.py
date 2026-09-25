@@ -72,6 +72,31 @@ a { color: #1f5fa8; text-decoration: none; word-break: break-word; }
 """
 
 
+GUIDE_CSS = DOC_CSS + """
+@page { size: letter; margin: 0.8in 0.85in; }
+body { font-size: 10pt; }
+h1 { font-size: 23pt; margin-bottom: .1em; }
+h3 { font-size: 13pt; color: #52514e; margin: 0 0 2.2em; font-style: italic; }
+h2 { font-size: 13.5pt; margin: 1.9em 0 .55em; break-before: auto; }
+/* each numbered Part starts a fresh page; the first one must not */
+h2.part { break-before: page; page-break-before: always; }
+h2.part:first-of-type { break-before: auto; page-break-before: auto; }
+h4 { font: 700 11pt/1.3 "Helvetica Neue", Helvetica, Arial, sans-serif; margin: 1.3em 0 .4em;
+     break-after: avoid; page-break-after: avoid; }
+p, li { orphans: 2; widows: 2; }
+blockquote { margin: 0; }
+strong + br { line-height: 2; }
+table { font-size: 8.8pt; }
+th, td { padding: .3em .45em; }
+hr { margin: 1.4em 0; }
+ul { margin: .3em 0 .8em; }
+li { margin: 0 0 .4em; }
+/* NB: never use p > strong:only-child here -- CSS :only-child ignores text nodes,
+   so it matches any paragraph containing a single bold phrase and would break
+   sentences like "Read as a **measurement study**, ..." into three blocks. */
+"""
+
+
 def find_chrome() -> str:
     for path in CHROME_CANDIDATES:
         if Path(path).exists():
@@ -85,7 +110,7 @@ def find_chrome() -> str:
 CODE_SPAN = re.compile(r"```.*?```|`[^`\n]+`", re.S)
 
 
-def markdown_to_html(md_text: str, title: str) -> str:
+def markdown_to_html(md_text: str, title: str, css: str = DOC_CSS) -> str:
     import markdown
 
     # Code blocks and inline code are literal text -- the math rewriting below must
@@ -107,8 +132,10 @@ def markdown_to_html(md_text: str, title: str) -> str:
     body = re.sub(r"\x00CODE(\d+)\x00", lambda m: stash[int(m.group(1))], body)
 
     html_body = markdown.markdown(body, extensions=["tables", "fenced_code", "sane_lists"])
+    # mark the numbered Part headings so each can start its own page
+    html_body = re.sub(r"<h2>(Part \d+|Glossary|Appendix)", r'<h2 class="part">\1', html_body)
     return (f'<!doctype html><html lang="en"><head><meta charset="utf-8">'
-            f"<title>{title}</title><style>{DOC_CSS}</style></head>"
+            f"<title>{title}</title><style>{css}</style></head>"
             f"<body>{html_body}</body></html>")
 
 
@@ -124,14 +151,21 @@ def html_to_pdf(html_path: Path, pdf_path: Path, chrome: str) -> None:
 def main() -> None:
     chrome = find_chrome()
 
-    writeup_md = ROOT / "writeup" / "writeup.md"
-    writeup_html = ROOT / "writeup" / "writeup.print.html"
-    writeup_html.write_text(
-        markdown_to_html(writeup_md.read_text(),
-                         "Do companies bend earnings to avoid reporting a loss?"),
-        encoding="utf-8")
-    html_to_pdf(writeup_html, ROOT / "writeup" / "writeup.pdf", chrome)
-    print("wrote writeup/writeup.pdf")
+    docs = [
+        ("writeup/writeup.md", "writeup/writeup.pdf",
+         "Do companies bend earnings to avoid reporting a loss?", DOC_CSS),
+        ("writeup/project_guide.md", "writeup/project_guide.pdf",
+         "Earnings Discontinuity Analysis — Complete Project Guide", GUIDE_CSS),
+    ]
+    for md_rel, pdf_rel, title, css in docs:
+        md_path = ROOT / md_rel
+        if not md_path.exists():
+            print(f"skipped {md_rel} (not found)")
+            continue
+        html_path = md_path.with_suffix(".print.html")
+        html_path.write_text(markdown_to_html(md_path.read_text(), title, css), encoding="utf-8")
+        html_to_pdf(html_path, ROOT / pdf_rel, chrome)
+        print(f"wrote {pdf_rel}")
 
     html_to_pdf(ROOT / "slides" / "slides.html", ROOT / "slides" / "slides.pdf", chrome)
     print("wrote slides/slides.pdf")
