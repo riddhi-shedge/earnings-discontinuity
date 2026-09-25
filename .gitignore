@@ -24,3 +24,7 @@ data/cache/
 
 # generated intermediate for the writeup PDF
 writeup/*.print.html
+
+# Personal study guide -- kept local, not published.
+# Regenerate any time with: python -m src.export_docs
+writeup/project_guide.*

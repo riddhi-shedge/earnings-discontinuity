@@ -74,8 +74,8 @@ a { color: #1f5fa8; text-decoration: none; word-break: break-word; }
 
 GUIDE_CSS = DOC_CSS + """
 /* ---- reference guide: dense, no page breaks, strong visual hierarchy ------- */
-@page { size: letter; margin: 0.72in 0.78in; }
-body { font-size: 9.4pt; line-height: 1.44; }
+@page { size: letter; margin: 0.78in 0.82in; }
+body { font-size: 9.8pt; line-height: 1.52; }
 
 h1 { font-size: 20pt; margin: 0 0 .1em; }
 h1 + h3 { font-size: 11.5pt; font-style: italic; color: #52514e; font-weight: 400;
@@ -98,8 +98,8 @@ h3 { font: 700 10pt/1.3 "Helvetica Neue", Helvetica, Arial, sans-serif; color: #
 h2 + p, h3 + p, h2 + table, h3 + table { break-before: avoid; page-break-before: avoid; }
 
 /* definitions: compact, a thin accent rule rather than a filled box */
-blockquote { margin: .55em 0; padding: 0 0 0 .7em; border-left: 2.5px solid #2a78d6;
-             background: none; font-size: 9pt; line-height: 1.4;
+blockquote { margin: .7em 0; padding: .35em .6em .35em .75em; border-left: 3px solid #2a78d6;
+             background: #f7f9fc; font-size: 9.4pt; line-height: 1.45;
              break-inside: avoid; page-break-inside: avoid; }
 blockquote p { margin: 0 0 .3em; }
 blockquote p:last-child { margin-bottom: 0; }
@@ -111,14 +111,16 @@ p:has(> .q) { margin-top: 1.15em; }
 /* a question must not be the last thing on a page */
 p .q { break-after: avoid; page-break-after: avoid; }
 
-p, li { orphans: 2; widows: 2; margin: 0 0 .55em; }
+p, li { orphans: 2; widows: 2; margin: 0 0 .62em; }
 ul, ol { margin: .3em 0 .7em; padding-left: 1.2em; }
 li { margin: 0 0 .3em; }
 table { font-size: 8.4pt; margin: .7em 0 .85em; }
 th, td { padding: .26em .4em; }
-/* let the markdown column markers (|---:|) drive alignment, not a blanket rule:
-   these tables mix prose columns with numeric ones. */
-th, td { text-align: left; }
+/* Let the markdown column markers (|---:|) drive alignment rather than a blanket
+   rule -- these tables mix prose columns with numeric ones. Must repeat the base
+   selector exactly: `th, td` alone loses on specificity to `tr td:not(:first-child)`.
+   Markdown emits inline styles for :-marked columns, which still win over this. */
+tr td:not(:first-child), tr th:not(:first-child) { text-align: left; }
 pre { margin: .7em 0; padding: .5em .7em; }
 pre code { font-size: 8.4pt; }
 hr { margin: 1.2em 0; }

@@ -318,7 +318,6 @@ slides/        earnings_discontinuity.pptx  -- 19-slide presentation with speake
                speaker_notes.md             -- the same script, readable on its own
                slides.html, slides.pdf      -- the short 8-slide summary deck
 writeup/       writeup.md, writeup.pdf         -- 4-page writeup
-               project_guide.md, .pdf        -- 20-page guide + Q&A prep
 src/           sec_loader, yf_loader, panel, binning, discontinuity, plotting, build_panel
                export_pdf, export_docs, export_dashboard, export_sheets_csv,
                export_explainers, deck_content + export_deck
@@ -330,7 +329,6 @@ tests/         35 unit tests -- lag logic, zero-on-boundary, drop-log accounting
 | File | What it is |
 |---|---|
 | `writeup/writeup.pdf` | 4-page writeup, letter size, suitable for attaching to an application |
-| `writeup/project_guide.pdf` | 20-page project guide — the whole project explained from first principles with 43 terms defined inline, every formula worked through with real numbers, 26 anticipated questions with answers, a cheat sheet and a glossary |
 | `slides/earnings_discontinuity.pptx` | 19-slide presentation (15 main + 4 backup), 16:9, with a full spoken script in every slide's notes pane. Drag into Google Drive to open as Google Slides; notes carry over. |
 | `slides/speaker_notes.md` | The same script as a standalone document |
 | `slides/slides.pdf` | Short 8-slide summary deck, one slide per page |
